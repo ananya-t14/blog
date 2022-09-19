@@ -1,17 +1,36 @@
 import Navbar from "../Navbar/Navbar";
 import pattern from "../../Assets/Images/pat.png";
-import { useState } from "react";
-// import fs from "fs";
+import { useEffect, useState } from "react";
+import data from "../../Assets/Data/Data.json";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function Form() {
-  const [formdata, setFormData] = useState({});
+  const [formdata, setFormData] = useState({
+    datetime: new Date().toLocaleString(),
+  });
   const [valid, setValid] = useState(false);
   //   console.log(formdata);
-  function Submit() {
+  const navigate = useNavigate();
+  var prev = localStorage.getItem("blogdata");
+  const [totaldata, setData] = useState([]);
+  useEffect(() => {
+    if (prev) {
+      setData([...totaldata, ...JSON.parse(prev)]);
+    }
+  }, []);
+  async function Submit() {
     if (Check()) {
-      setFormData({ ...formdata, datetime: new Date().toLocaleString() });
       console.log(formdata);
+      setData([formdata, ...totaldata]);
+      console.log(totaldata);
+      const now = await JSON.stringify(totaldata);
+      await localStorage.setItem("blogdata", now);
+
+      toast.success("Blog Posted Successfully");
     } else {
-      window.alert("Please fill all the fields");
+      toast.error("Please fill all the fields");
     }
   }
   function Check() {
@@ -28,6 +47,7 @@ export default function Form() {
       style={{ backgroundImage: `url(${pattern})`, backgroundSize: "cover" }}
     >
       <Navbar />
+      <ToastContainer />
       <div className="flex flex-col gap-y-4 w-[55vw] mx-auto mt-5 p-20 pt-10 border-2 rounded-lg border-white">
         <span className="text-center text-white text-3xl mb-5">
           Add a new post
@@ -68,7 +88,11 @@ export default function Form() {
         </div>
         <button
           className="border-2 p-2 rounded-lg bg-gradient-to-r from-[#dfbd69] to-[#926f34] w-[10vw] text-black hover:bg-transparent hover:text-transparent hover:bg-clip-text hover:border-yellow-500 transition mx-auto"
-          onClick={Submit}
+          id="btn"
+          onClick={() => {
+            Submit();
+            // Submit();
+          }}
           //   disabled={Check}
         >
           Post

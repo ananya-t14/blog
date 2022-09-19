@@ -4,7 +4,9 @@ import Card from "../Card/Card";
 import data from "../../Assets/Data/Data.json";
 
 export default function Home() {
-  console.log(data);
+  const local = localStorage.getItem("blogdata");
+  const finaldata = local ? [...JSON.parse(local), ...data] : data;
+  console.log(local);
   return (
     <div
       className="min-h-[100vh] bg-[#3e3c4e] "
@@ -12,8 +14,8 @@ export default function Home() {
     >
       <Navbar />
       <div className="flex flex-wrap justify-center place-items-center gap-y-4 flex-col align-middle mt-5 ">
-        {data.map((item, idx) => {
-          return <Card data={item} key={idx} />;
+        {finaldata.map((item, idx) => {
+          return item.message ? <Card data={item} key={idx} /> : null;
         })}
       </div>
     </div>
